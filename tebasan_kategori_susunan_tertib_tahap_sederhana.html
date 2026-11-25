@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tebasan Kategori & Susunan Tertib — Tahap Sederhana (Demon Slayer)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Noto Sans Arabic (Tulisan Jawi Jelas) & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        jawi: ['"Noto Sans Arabic"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Tema Kor Pembasmi Iblis — Teknik Pernafasan Air */
+        body {
+            background-color: #060b19;
+            color: #f8fafc;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(0, 229, 255, 0.14) 0%, transparent 42%),
+                radial-gradient(circle at 85% 85%, rgba(244, 63, 94, 0.12) 0%, transparent 42%);
+        }
+
+        /* Corak Ombak Jepun (Seigaiha) */
+        .pattern-seigaiha {
+            background-color: #0c162d;
+            background-image:
+                radial-gradient(circle at 100% 150%, #0c162d 24%, rgba(0, 229, 255, 0.08) 25%, rgba(0, 229, 255, 0.08) 28%, #0c162d 29%, #0c162d 36%, rgba(0, 229, 255, 0.08) 36%, rgba(0, 229, 255, 0.08) 40%, transparent 40%, transparent),
+                radial-gradient(circle at 0 150%, #0c162d 24%, rgba(0, 229, 255, 0.08) 25%, rgba(0, 229, 255, 0.08) 28%, #0c162d 29%, #0c162d 36%, rgba(0, 229, 255, 0.08) 36%, rgba(0, 229, 255, 0.08) 40%, transparent 40%, transparent);
+            background-size: 40px 20px;
+        }
+
+        .jawi-text {
+            font-family: 'Noto Sans Arabic', serif;
+            direction: rtl;
+            line-height: 1.85;
+        }
+
+        /* Kawalan Paparan Tulisan */
+        body.mode-jawi .rumi-only { display: none !important; }
+        body.mode-rumi .jawi-only { display: none !important; }
+
+        /* Gaya Butang 3D Anime */
+        .game-btn {
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+        }
+        .game-btn:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* Kanvas Permainan Responsif */
+        #blade-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none; /* Elak skrin tatal semasa meleret pedang di telefon */
+            cursor: crosshair;
+        }
+
+        /* Animasi Gegaran Apabila Salah */
+        @keyframes shakeHit {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+        .shake-arena {
+            animation: shakeHit 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-400 selection:text-slate-950">
+
+    <!-- Notifikasi Toast (Ganti alert) -->
+    <div id="toast-box" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-xs sm:max-w-sm"></div>
+
+    <!-- HEADER UTAMA -->
+    <header class="sticky top-0 z-40 bg-[#060b19]/95 backdrop-blur-md border-b border-cyan-500/30 shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- Identiti Tahap Sederhana -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 via-blue-600 to-rose-500 p-0.5 shadow-md shadow-cyan-500/30 shrink-0">
+                    <div class="w-full h-full bg-[#060b19] rounded-[14px] flex items-center justify-center text-xl">
+                        ⚔️
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            Tahap 2 • Sederhana (Ujian Kor Pembasmi Iblis)
+                        </span>
+                        <span class="text-xs text-cyan-300 font-bold hidden sm:inline">Buku Teks Ms. 96–99</span>
+                    </div>
+                    <h1 class="text-base sm:text-xl font-extrabold text-white tracking-tight mt-0.5">
+                        Tebasan Kategori & Susunan Tertib
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Kawalan Tulisan & Kesan Bunyi -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-1 flex items-center text-xs font-extrabold">
+                    <button onclick="setScriptMode('both')" id="mode-both" class="px-2.5 py-1.5 rounded-lg bg-cyan-500 text-slate-950 transition">Jawi + Rumi</button>
+                    <button onclick="setScriptMode('jawi')" id="mode-jawi" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition">Jawi</button>
+                    <button onclick="setScriptMode('rumi')" id="mode-rumi" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition">Rumi</button>
+                </div>
+
+                <button onclick="toggleSound()" id="btn-sound" class="p-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-cyan-300 transition" title="Kesan Bunyi Libasan Pedang">
+                    <span id="sound-icon" class="text-base">🔊</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- KANDUNGAN UTAMA -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-4 space-y-4">
+
+        <!-- BAR NAVIGASI 3 PUSINGAN & STATUS NYAWA -->
+        <section class="pattern-seigaiha border border-cyan-500/35 rounded-3xl p-4 sm:p-5 shadow-xl">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <!-- Butang Pilih Pusingan -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-1">
+                    <button onclick="selectRound(1)" id="tab-round-1" class="game-btn p-3 rounded-2xl bg-gradient-to-r from-cyan-500/30 to-emerald-500/20 border-2 border-cyan-400 text-left">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-300 block">Pusingan 1 • Tebasan</span>
+                        <span class="text-xs sm:text-sm font-extrabold text-white">Tujuan: Wajib vs Sunat</span>
+                    </button>
+
+                    <button onclick="selectRound(2)" id="tab-round-2" class="game-btn p-3 rounded-2xl bg-slate-900/90 border border-slate-700 hover:border-cyan-400 text-left">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-400 block">Pusingan 2 • Tebasan</span>
+                        <span class="text-xs sm:text-sm font-extrabold text-white">Langkah: Rukun vs Sunat</span>
+                    </button>
+
+                    <button onclick="selectRound(3)" id="tab-round-3" class="game-btn p-3 rounded-2xl bg-slate-900/90 border border-slate-700 hover:border-amber-400 text-left">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block">Pusingan 3 • Tertib</span>
+                        <span class="text-xs sm:text-sm font-extrabold text-white">Susun 6 Rukun Wuduk</span>
+                    </button>
+                </div>
+
+                <!-- Panel Nyawa (3 Hati), Skor & Petunjuk Warna -->
+                <div class="flex flex-wrap items-center justify-between lg:justify-end gap-2.5 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-800">
+                    <!-- 3 Nyawa Hati -->
+                    <div class="bg-slate-950/90 border border-rose-500/40 px-3 py-2 rounded-xl flex items-center gap-1.5" title="Nyawa Kor Pembasmi Iblis">
+                        <span class="text-xs font-extrabold text-slate-300 mr-1">Nyawa:</span>
+                        <span id="hearts-display" class="text-base tracking-widest">❤️❤️❤️</span>
+                    </div>
+
+                    <!-- Kemajuan & Skor -->
+                    <div class="bg-slate-950/90 border border-cyan-500/40 px-3 py-2 rounded-xl text-xs font-extrabold text-cyan-200">
+                        Selesai: <span id="progress-display" class="text-emerald-400 text-sm">0 / 8</span>
+                    </div>
+
+                    <!-- Suis Petunjuk Warna (Color Coding Toggle) -->
+                    <button onclick="toggleColorHint()" id="btn-color-hint" class="game-btn px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-400/60 text-amber-200 text-xs font-extrabold flex items-center gap-1.5" title="Hidupkan atau matikan warna pembayang pada kad">
+                        <span id="hint-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                        <span>Petunjuk Warna: ON</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- ARENA PUSINGAN 1 & 2: KANVAS TEBASAN ALA FRUIT NINJA                  -->
+        <!-- ===================================================================== -->
+        <section id="slicing-section" class="space-y-3">
+            <!-- Arahan Ringkas -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm">
+                <p id="slice-instruction" class="text-slate-200 font-semibold">
+                    ⚔️ <strong>Cara Tebas:</strong> Leret (<em>swipe</em>) kad ke arah <strong>Bakul Kiri</strong> atau <strong>Bakul Kanan</strong> — atau klik kad kemudian klik bakul yang betul!
+                </p>
+                <button onclick="restartCurrentRound()" class="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-extrabold shrink-0">
+                    🔄 Ulang Pusingan
+                </button>
+            </div>
+
+            <!-- Bekas Kanvas HTML5 Interaktif -->
+            <div id="canvas-wrapper" class="relative w-full h-[460px] sm:h-[510px] rounded-3xl overflow-hidden border-2 border-cyan-500/40 bg-[#070e20] shadow-2xl select-none">
+                <canvas id="blade-canvas"></canvas>
+
+                <!-- OVERLAY MULA PUSINGAN (START SCREEN) -->
+                <div id="canvas-start-overlay" class="absolute inset-0 bg-[#060b19]/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-20">
+                    <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-3xl mb-3 shadow-lg shadow-cyan-500/20">
+                        🌊⚔️
+                    </div>
+                    <h2 id="overlay-round-title" class="text-xl sm:text-3xl font-extrabold text-white">
+                        Pusingan 1: Tebasan Tujuan Berwuduk
+                    </h2>
+                    <p id="overlay-round-desc" class="text-xs sm:text-sm text-slate-300 max-w-lg mt-2 leading-relaxed">
+                        Asingkan <strong>3 Tujuan Wajib Berwuduk</strong> ke bakul kiri dan <strong>5 Tujuan Sunat Berwuduk</strong> ke bakul kanan dengan menebas kad yang melayang!
+                    </p>
+                    <div class="mt-4 flex flex-wrap justify-center gap-3 text-xs font-bold">
+                        <span id="overlay-left-tag" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-300">⬅️ Kiri: WAJIB BERWUDUK</span>
+                        <span id="overlay-right-tag" class="px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-400/50 text-rose-300">Kanan: SUNAT BERWUDUK ➡️</span>
+                    </div>
+                    <button onclick="startSlicingGameplay()" class="game-btn mt-6 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl">
+                        ⚔️ Mula Menebas Sekarang!
+                    </button>
+                </div>
+
+                <!-- OVERLAY TAMAT / GAME OVER / MENANG PUSINGAN -->
+                <div id="canvas-end-overlay" class="hidden absolute inset-0 bg-[#060b19]/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
+                    <div id="end-emoji" class="text-5xl mb-2">🏆</div>
+                    <h2 id="end-title" class="text-2xl sm:text-3xl font-extrabold text-white">Pusingan Selesai!</h2>
+                    <p id="end-desc" class="text-xs sm:text-sm text-cyan-200 max-w-md mt-2 leading-relaxed"></p>
+                    <div class="mt-6 flex flex-wrap justify-center gap-3">
+                        <button onclick="restartCurrentRound()" class="game-btn px-5 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-extrabold text-xs sm:text-sm">
+                            🔄 Cuba Pusingan Ini Lagi
+                        </button>
+                        <button id="btn-next-stage" onclick="goToNextRound()" class="game-btn px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm">
+                            Seterusnya ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- ARENA PUSINGAN 3: SUSUNAN TERTIB 6 RUKUN WUDUK                        -->
+        <!-- ===================================================================== -->
+        <section id="tertib-section" class="hidden space-y-4">
+            <div class="bg-[#0c162d] border border-amber-500/40 rounded-3xl p-5 sm:p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-extrabold border border-amber-500/40">
+                            ⚡ Ujian Akhir Tahap Sederhana • Rukun Ke-6: Tertib
+                        </span>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1.5">
+                            Susun 6 Rukun Wuduk Mengikut Tertib (1 hingga 6)
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
+                            Tebas (klik) kad Rukun Wuduk di sebelah bawah mengikut urutan yang betul dari langkah pertama hingga keenam!
+                        </p>
+                    </div>
+                    <button onclick="initTertibRound()" class="game-btn px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-extrabold shrink-0">
+                        🔄 Kocok Semula Kad
+                    </button>
+                </div>
+
+                <!-- 6 Slot Gulungan Tertib (1 -> 6) -->
+                <div class="mt-5">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-cyan-300 mb-3">
+                        📜 Gulungan Susunan Tertib Anda:
+                    </h3>
+                    <div id="tertib-target-slots" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- 6 Slot dijana oleh JS -->
+                    </div>
+                </div>
+
+                <!-- Dek Kad Rukun Wuduk Rawak untuk Ditebas -->
+                <div class="mt-6 pt-5 border-t border-slate-800">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 mb-3">
+                        ⚔️ Pilih & Tebas Rukun Seterusnya (<span id="next-tertib-hint" class="text-amber-300">Langkah #1</span>):
+                    </h3>
+                    <div id="tertib-shuffled-deck" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- Kad pilihan dijana oleh JS -->
+                    </div>
+                </div>
+
+                <!-- Banner Kemenangan Pusingan 3 -->
+                <div id="tertib-victory-box" class="hidden mt-6 bg-gradient-to-r from-emerald-950 via-slate-900 to-cyan-950 border-2 border-emerald-400 rounded-2xl p-6 text-center space-y-3">
+                    <div class="text-4xl">🏆⚔️🌊</div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-white">Tahniah! Anda Lulus Ujian Tahap Sederhana!</h3>
+                    <p class="text-xs sm:text-sm text-cyan-200 max-w-xl mx-auto">
+                        Anda berjaya mengasingkan tujuan wajib & sunat, membezakan 6 Rukun & 7 Sunat Wuduk, serta menyusun kesemua Rukun Wuduk mengikut <strong>Tertib</strong>!
+                    </p>
+                    <p class="jawi-text text-xl text-emerald-300 font-bold">ترتيب دالم ملاكوكن عبادة</p>
+                    <div class="pt-2">
+                        <button onclick="selectRound(1)" class="game-btn px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm">
+                            🔄 Main Semula Dari Pusingan 1
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-[#050914] py-4 px-4 mt-4">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+            <p>Permainan Interaktif Pendidikan Islam • <span class="text-cyan-400 font-bold">Tahap 2: Tebasan Kategori & Susunan Tertib</span></p>
+            <p class="jawi-text text-cyan-300 text-sm">وضوء سمڤورنا • روكون دان سنة</p>
+        </div>
+    </footer>
+
+    <!-- LOGIK ENJIN KANVAS, FIZIK TEBASAN & DATA BUKU TEKS -->
+    <script>
+        // =========================================================================
+        // 1. PANGKALAN DATA LENGKAP MENGIKUT BUKU TEKS (MS. 96 - 99)
+        // =========================================================================
+        
+        // Pusingan 1: Tujuan Wajib Berwuduk (3) vs Sunat Berwuduk (5) — Ms. 96
+        const round1Items = [
+            { id: 't1', cat: 'left', catName: 'Wajib Berwuduk', icon: '🕌', rumi: 'Solat', jawi: 'صلاة' },
+            { id: 't2', cat: 'left', catName: 'Wajib Berwuduk', icon: '🕋', rumi: 'Tawaf', jawi: 'طواف' },
+            { id: 't3', cat: 'left', catName: 'Wajib Berwuduk', icon: '📖', rumi: 'Menyentuh al-Quran', jawi: 'مينتوه القرآن' },
+            { id: 't4', cat: 'right', catName: 'Sunat Berwuduk', icon: '🛌', rumi: 'Sebelum tidur', jawi: 'سبلوم تيدور' },
+            { id: 't5', cat: 'right', catName: 'Sunat Berwuduk', icon: '📚', rumi: 'Menuntut ilmu', jawi: 'منونتوت علمو' },
+            { id: 't6', cat: 'right', catName: 'Sunat Berwuduk', icon: '🤲', rumi: 'Membaca al-Quran', jawi: 'ممباچ القرآن' },
+            { id: 't7', cat: 'right', catName: 'Sunat Berwuduk', icon: '⛩️', rumi: 'Masuk masjid', jawi: 'ماسوق مسجد' },
+            { id: 't8', cat: 'right', catName: 'Sunat Berwuduk', icon: '🌊', rumi: 'Mengawal kemarahan', jawi: 'مڠاول كمارهن' }
+        ];
+
+        // Pusingan 2: 6 Rukun Wuduk (Kiri) vs 7 Sunat Wuduk (Kanan) — Ms. 98-99
+        const round2Items = [
+            // 6 Rukun Wuduk (cat: 'left')
+            { id: 'r1', cat: 'left', catName: 'Rukun Wuduk', icon: '🤲', rumi: 'Berniat ketika membasuh muka', jawi: 'برنية كتيك ممباسوه موك' },
+            { id: 'r2', cat: 'left', catName: 'Rukun Wuduk', icon: '💧', rumi: 'Membasuh muka', jawi: 'ممباسوه موك' },
+            { id: 'r3', cat: 'left', catName: 'Rukun Wuduk', icon: '💪', rumi: 'Membasuh tangan hingga ke siku', jawi: 'ممباسوه تاڠن هيڠڬ كسيكو' },
+            { id: 'r4', cat: 'left', catName: 'Rukun Wuduk', icon: '🧢', rumi: 'Menyapu sebahagian kepala', jawi: 'مڽاڤو سبهاڬين كڤالا' },
+            { id: 'r5', cat: 'left', catName: 'Rukun Wuduk', icon: '🦶', rumi: 'Membasuh kaki hingga ke buku lali', jawi: 'ممباسوه كاكي هيڠڬ كبوكو لالي' },
+            { id: 'r6', cat: 'left', catName: 'Rukun Wuduk', icon: '🔢', rumi: 'Tertib', jawi: 'ترتيب' },
+
+            // 7 Sunat Wuduk (cat: 'right')
+            { id: 's1', cat: 'right', catName: 'Sunat Wuduk', icon: '🪥', rumi: 'Bersugi', jawi: 'برسوكي' },
+            { id: 's2', cat: 'right', catName: 'Sunat Wuduk', icon: '📿', rumi: 'Membaca Bismillahirrahmanirrahim', jawi: 'ممباچ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' },
+            { id: 's3', cat: 'right', catName: 'Sunat Wuduk', icon: '🖐️', rumi: 'Membasuh tangan hingga pergelangan', jawi: 'ممباسوه تاڠن هيڠڬ كڤرڬلڠنڽ' },
+            { id: 's4', cat: 'right', catName: 'Sunat Wuduk', icon: '🥤', rumi: 'Berkumur-kumur', jawi: 'بركومور-كومور' },
+            { id: 's5', cat: 'right', catName: 'Sunat Wuduk', icon: '👃', rumi: 'Memasukkan air ke dalam hidung', jawi: 'مماسوقكن اءير كدالم هيدوڠ' },
+            { id: 's6', cat: 'right', catName: 'Sunat Wuduk', icon: '👂', rumi: 'Membasuh telinga', jawi: 'ممباسوه تليڠا' },
+            { id: 's7', cat: 'right', catName: 'Sunat Wuduk', icon: '✨', rumi: 'Membaca doa selepas wuduk', jawi: 'ممباچ دعاء' }
+        ];
+
+        // Pusingan 3: Susunan Tertib 6 Rukun Wuduk (Urutan 1 -> 6)
+        const rukunTertibItems = [
+            { order: 1, character: 'Tanjiro', rumi: 'Berniat ketika membasuh muka', jawi: 'برنية كتيك ممباسوه موك', icon: '🤲' },
+            { order: 2, character: 'Tanjiro', rumi: 'Membasuh muka', jawi: 'ممباسوه موك', icon: '💧' },
+            { order: 3, character: 'Zenitsu', rumi: 'Membasuh tangan hingga ke siku', jawi: 'ممباسوه تاڠن هيڠڬ كسيكو', icon: '💪' },
+            { order: 4, character: 'Inosuke', rumi: 'Menyapu sebahagian kepala', jawi: 'مڽاڤو سبهاڬين كڤالا', icon: '🧢' },
+            { order: 5, character: 'Rengoku', rumi: 'Membasuh kaki hingga ke buku lali', jawi: 'ممباسوه كاكي هيڠڬ كبوكو لالي', icon: '🦶' },
+            { order: 6, character: 'Giyu', rumi: 'Tertib', jawi: 'ترتيب', icon: '⚔️' }
+        ];
+
+        // =========================================================================
+        // 2. BUNYI SINTESIS WEB AUDIO API & TOAST NOTIFIKASI
+        // =========================================================================
+        let soundEnabled = true;
+
+        function playBladeAudio(type) {
+            if (!soundEnabled) return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioCtx();
+                const now = ctx.currentTime;
+
+                if (type === 'slash') {
+                    // Bunyi libasan pedang air Nichirin
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(920, now);
+                    osc.frequency.exponentialRampToValueAtTime(220, now + 0.14);
+                    gain.gain.setValueAtTime(0.16, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } else if (type === 'correct') {
+                    // Bunyi percikan air berkilau tepat masuk bakul
+                    [587.33, 880, 1174.66].forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                        gain.gain.setValueAtTime(0.16, now + idx * 0.06);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.28);
+                        osc.start(now + idx * 0.06);
+                        osc.stop(now + idx * 0.06 + 0.28);
+                    });
+                } else if (type === 'wrong') {
+                    // Bunyi amaran salah bakul
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(190, now);
+                    osc.frequency.linearRampToValueAtTime(120, now + 0.25);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } else if (type === 'victory') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.11);
+                        gain.gain.setValueAtTime(0.18, now + i * 0.11);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.11 + 0.4);
+                        osc.start(now + i * 0.11);
+                        osc.stop(now + i * 0.11 + 0.4);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) playBladeAudio('slash');
+            showToast(soundEnabled ? '🔊 Kesan bunyi diaktifkan' : '🔇 Kesan bunyi dimatikan', 'info');
+        }
+
+        function showToast(msg, type = 'info') {
+            const box = document.getElementById('toast-box');
+            const el = document.createElement('div');
+            const colors = type === 'success'
+                ? 'bg-emerald-950/95 border-emerald-400 text-emerald-200'
+                : type === 'error'
+                ? 'bg-rose-950/95 border-rose-400 text-rose-200'
+                : 'bg-slate-900/95 border-cyan-400 text-cyan-200';
+
+            el.className = `pointer-events-auto px-4 py-2.5 rounded-xl border ${colors} shadow-xl text-xs sm:text-sm font-extrabold backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0`;
+            el.textContent = msg;
+            box.appendChild(el);
+
+            requestAnimationFrame(() => el.classList.remove('translate-y-2', 'opacity-0'));
+            setTimeout(() => {
+                el.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => el.remove(), 300);
+            }, 2200);
+        }
+
+        // =========================================================================
+        // 3. STATE GLOBAL PERMAINAN & KAWALAN UI
+        // =========================================================================
+        let scriptMode = 'both'; // 'both' | 'jawi' | 'rumi'
+        let colorHintEnabled = true;
+        let currentRound = 1; // 1, 2, or 3
+        let lives = 3;
+        let sortedCount = 0;
+        let totalInRound = 8;
+
+        function setScriptMode(mode) {
+            scriptMode = mode;
+            document.body.classList.remove('mode-jawi', 'mode-rumi');
+            if (mode === 'jawi') document.body.classList.add('mode-jawi');
+            if (mode === 'rumi') document.body.classList.add('mode-rumi');
+
+            ['both', 'jawi', 'rumi'].forEach(m => {
+                const btn = document.getElementById(`mode-${m}`);
+                btn.className = m === mode
+                    ? 'px-2.5 py-1.5 rounded-lg bg-cyan-500 text-slate-950 transition'
+                    : 'px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition';
+            });
+            playBladeAudio('slash');
+            if (currentRound === 3) renderTertibSlots();
+        }
+
+        function toggleColorHint() {
+            colorHintEnabled = !colorHintEnabled;
+            const btn = document.getElementById('btn-color-hint');
+            if (colorHintEnabled) {
+                btn.className = 'game-btn px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-400/60 text-amber-200 text-xs font-extrabold flex items-center gap-1.5';
+                btn.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span><span>Petunjuk Warna: ON</span>';
+                showToast('💡 Petunjuk warna kategori diaktifkan', 'info');
+            } else {
+                btn.className = 'game-btn px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 text-xs font-extrabold flex items-center gap-1.5';
+                btn.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span><span>Petunjuk Warna: OFF</span>';
+                showToast('🔥 Mod Cabaran Sebenar: Petunjuk warna dimatikan!', 'info');
+            }
+            playBladeAudio('slash');
+            if (currentRound === 3) renderTertibDeck();
+        }
+
+        function updateTopHUD() {
+            const heartsEl = document.getElementById('hearts-display');
+            let heartsStr = '';
+            for (let i = 0; i < 3; i++) {
+                heartsStr += i < lives ? '❤️' : '🖤';
+            }
+            heartsEl.textContent = heartsStr;
+            document.getElementById('progress-display').textContent = `${sortedCount} / ${totalInRound}`;
+        }
+
+        function selectRound(roundNum) {
+            currentRound = roundNum;
+            isSlicingActive = false;
+
+            // Kemaskini tab aktif
+            [1, 2, 3].forEach(r => {
+                const btn = document.getElementById(`tab-round-${r}`);
+                if (r === roundNum) {
+                    btn.className = 'game-btn p-3 rounded-2xl bg-gradient-to-r from-cyan-500/30 to-emerald-500/20 border-2 border-cyan-400 text-left';
+                } else {
+                    btn.className = 'game-btn p-3 rounded-2xl bg-slate-900/90 border border-slate-700 hover:border-cyan-400 text-left';
+                }
+            });
+
+            if (roundNum === 1 || roundNum === 2) {
+                document.getElementById('slicing-section').classList.remove('hidden');
+                document.getElementById('tertib-section').classList.add('hidden');
+                prepareSlicingRound(roundNum);
+            } else {
+                document.getElementById('slicing-section').classList.add('hidden');
+                document.getElementById('tertib-section').classList.remove('hidden');
+                initTertibRound();
+            }
+            playBladeAudio('slash');
+        }
+
+        function restartCurrentRound() {
+            selectRound(currentRound);
+            if (currentRound === 1 || currentRound === 2) {
+                startSlicingGameplay();
+            }
+        }
+
+        function goToNextRound() {
+            if (currentRound < 3) {
+                selectRound(currentRound + 1);
+            } else {
+                selectRound(1);
+            }
+        }
+
+        // =========================================================================
+        // 4. ENJIN KANVAS TEBASAN KATEGORI (ALA FRUIT NINJA — PUSINGAN 1 & 2)
+        // =========================================================================
+        const canvas = document.getElementById('blade-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let isSlicingActive = false;
+        let roundQueue = [];
+        let flyingCards = [];
+        let slicedHalves = [];
+        let waterParticles = [];
+        let floatingPopups = [];
+        let bladePoints = [];
+        let isPointerDown = false;
+        let pointerStart = null;
+        let pointerCurrent = null;
+        let selectedCardForTap = null; // Sokongan klik kad -> klik bakul
+        let spawnTimer = 0;
+
+        // Konfigurasi Label Bakul Kiri & Kanan mengikut Pusingan
+        const roundConfigs = {
+            1: {
+                title: 'Pusingan 1: Tebasan Tujuan Berwuduk',
+                desc: 'Asingkan 3 Tujuan Wajib Berwuduk ke bakul kiri dan 5 Tujuan Sunat Berwuduk ke bakul kanan dengan menebas kad yang melayang!',
+                leftTitle: 'WAJIB BERWUDUK',
+                leftSub: 'واجب بروضوء (3)',
+                leftColor: '#10b981', // Emerald
+                rightTitle: 'SUNAT BERWUDUK',
+                rightSub: 'سنة بروضوء (5)',
+                rightColor: '#f43f5e' // Rose
+            },
+            2: {
+                title: 'Pusingan 2: Tebasan Rukun vs Sunat Wuduk',
+                desc: 'Asingkan 6 Rukun Wuduk ke bakul kiri dan 7 Sunat Wuduk ke bakul kanan dengan tepat sebelum mara ke Ujian Tertib!',
+                leftTitle: '6 RUKUN WUDUK',
+                leftSub: 'روكون وضوء (6)',
+                leftColor: '#00e5ff', // Cyan
+                rightTitle: '7 SUNAT WUDUK',
+                rightSub: 'سنة وضوء (7)',
+                rightColor: '#f43f5e' // Rose
+            }
+        };
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (!wrapper) return;
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function prepareSlicingRound(roundNum) {
+            resizeCanvas();
+            const cfg = roundConfigs[roundNum];
+            const items = roundNum === 1 ? round1Items : round2Items;
+
+            lives = 3;
+            sortedCount = 0;
+            totalInRound = items.length;
+            updateTopHUD();
+
+            roundQueue = [...items].sort(() => Math.random() - 0.5);
+            flyingCards = [];
+            slicedHalves = [];
+            waterParticles = [];
+            floatingPopups = [];
+            bladePoints = [];
+            selectedCardForTap = null;
+
+            // Kemaskini Overlay Mula
+            document.getElementById('overlay-round-title').textContent = cfg.title;
+            document.getElementById('overlay-round-desc').textContent = cfg.desc;
+            document.getElementById('overlay-left-tag').textContent = `⬅️ Bakul Kiri: ${cfg.leftTitle}`;
+            document.getElementById('overlay-right-tag').textContent = `Bakul Kanan: ${cfg.rightTitle} ➡️`;
+
+            document.getElementById('canvas-start-overlay').classList.remove('hidden');
+            document.getElementById('canvas-end-overlay').classList.add('hidden');
+        }
+
+        function startSlicingGameplay() {
+            resizeCanvas();
+            document.getElementById('canvas-start-overlay').classList.add('hidden');
+            document.getElementById('canvas-end-overlay').classList.add('hidden');
+            isSlicingActive = true;
+            spawnTimer = 25; // Lancar kad pertama segera
+        }
+
+        function spawnFlyingCard() {
+            if (roundQueue.length === 0) return;
+
+            const wrapper = document.getElementById('canvas-wrapper');
+            const W = wrapper.clientWidth;
+            const H = wrapper.clientHeight;
+
+            const data = roundQueue.shift();
+            const cardW = Math.min(230, Math.max(175, W * 0.34));
+            const cardH = 88;
+
+            // Kedudukan mula di bahagian bawah tengah
+            const startX = W * 0.25 + Math.random() * (W * 0.5 - cardW);
+            const startY = H - 75;
+
+            // Fizik lambungan supaya kad sentiasa mencapai ketinggian selesa (22% - 38% dari atas)
+            const gravity = 0.13;
+            const targetPeakY = H * (0.18 + Math.random() * 0.18);
+            const deltaY = Math.max(120, startY - targetPeakY);
+            const vy = -Math.sqrt(2 * gravity * deltaY);
+
+            // Halaju mendatar perlahan ke arah tengah
+            const centerX = W / 2 - cardW / 2;
+            const vx = (centerX - startX) * 0.012 + (Math.random() - 0.5) * 1.1;
+
+            flyingCards.push({
+                data,
+                x: startX,
+                y: startY,
+                w: cardW,
+                h: cardH,
+                vx,
+                vy,
+                gravity,
+                angle: (Math.random() - 0.5) * 0.08,
+                vAngle: (Math.random() - 0.5) * 0.004
+            });
+        }
+
+        // Semak pelanggaran garis tebasan dengan kotak kad
+        function lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh) {
+            // Semak jika salah satu titik berada dalam kotak
+            if (x1 >= rx && x1 <= rx + rw && y1 >= ry && y1 <= ry + rh) return true;
+            if (x2 >= rx && x2 <= rx + rw && y2 >= ry && y2 <= ry + rh) return true;
+
+            // Semak titik tengah segmen
+            const mx = (x1 + x2) / 2;
+            const my = (y1 + y2) / 2;
+            if (mx >= rx && mx <= rx + rw && my >= ry && my <= ry + rh) return true;
+
+            return false;
+        }
+
+        function processCardCategorization(cardIndex, chosenSide) {
+            const card = flyingCards[cardIndex];
+            if (!card) return;
+
+            flyingCards.splice(cardIndex, 1);
+            if (selectedCardForTap && selectedCardForTap.data.id === card.data.id) {
+                selectedCardForTap = null;
+            }
+
+            const wrapper = document.getElementById('canvas-wrapper');
+            const W = wrapper.clientWidth;
+            const H = wrapper.clientHeight;
+            const isCorrect = card.data.cat === chosenSide;
+
+            // Cipta dua belahan kad terbang ke arah bakul yang dipilih
+            const targetX = chosenSide === 'left' ? W * 0.22 : W * 0.78;
+            const targetY = H - 45;
+
+            slicedHalves.push(
+                {
+                    x: card.x, y: card.y, w: card.w / 2, h: card.h,
+                    vx: (targetX - card.x) * 0.06 - 2,
+                    vy: (targetY - card.y) * 0.06 - 3,
+                    rot: -0.15, vRot: -0.06, alpha: 1,
+                    color: isCorrect ? '#10b981' : '#f43f5e',
+                    text: card.data.icon
+                },
+                {
+                    x: card.x + card.w / 2, y: card.y, w: card.w / 2, h: card.h,
+                    vx: (targetX - card.x) * 0.06 + 2,
+                    vy: (targetY - card.y) * 0.06 - 3,
+                    rot: 0.15, vRot: 0.06, alpha: 1,
+                    color: isCorrect ? '#00e5ff' : '#f43f5e',
+                    text: '⚔️'
+                }
+            );
+
+            // Percikan zarah air (Water Breathing Particles)
+            const pColor = isCorrect ? '#00e5ff' : '#fb7185';
+            for (let i = 0; i < 18; i++) {
+                const ang = Math.random() * Math.PI * 2;
+                const spd = 2 + Math.random() * 5;
+                waterParticles.push({
+                    x: card.x + card.w / 2,
+                    y: card.y + card.h / 2,
+                    vx: Math.cos(ang) * spd,
+                    vy: Math.sin(ang) * spd,
+                    r: 3 + Math.random() * 4,
+                    alpha: 1,
+                    color: pColor
+                });
+            }
+
+            if (isCorrect) {
+                sortedCount++;
+                updateTopHUD();
+                playBladeAudio('correct');
+                floatingPopups.push({
+                    x: card.x + card.w / 2,
+                    y: card.y,
+                    text: `✅ TEPAT! (${card.data.catName})`,
+                    color: '#34d399',
+                    alpha: 1
+                });
+
+                // Semak jika semua kad dalam pusingan telah selesai
+                if (sortedCount >= totalInRound) {
+                    setTimeout(() => finishSlicingRound(true), 550);
+                }
+            } else {
+                lives = Math.max(0, lives - 1);
+                updateTopHUD();
+                playBladeAudio('wrong');
+
+                // Masukkan semula kad yang salah ke dalam giliran supaya pelajar dapat menguasainya
+                roundQueue.push(card.data);
+
+                wrapper.classList.add('shake-arena');
+                setTimeout(() => wrapper.classList.remove('shake-arena'), 400);
+
+                floatingPopups.push({
+                    x: card.x + card.w / 2,
+                    y: card.y,
+                    text: `❌ Salah! Sepatutnya: ${card.data.catName}`,
+                    color: '#fb7185',
+                    alpha: 1
+                });
+
+                if (lives <= 0) {
+                    setTimeout(() => finishSlicingRound(false), 550);
+                }
+            }
+        }
+
+        function finishSlicingRound(isWin) {
+            isSlicingActive = false;
+            const endOverlay = document.getElementById('canvas-end-overlay');
+            const emoji = document.getElementById('end-emoji');
+            const title = document.getElementById('end-title');
+            const desc = document.getElementById('end-desc');
+            const nextBtn = document.getElementById('btn-next-stage');
+
+            endOverlay.classList.remove('hidden');
+
+            if (isWin) {
+                playBladeAudio('victory');
+                emoji.textContent = '🌊🏆';
+                title.textContent = `Syabas! Pusingan ${currentRound} Berjaya!`;
+                desc.textContent = currentRound === 1
+                    ? 'Anda telah berjaya mengasingkan tujuan Wajib Berwuduk dan Sunat Berwuduk dengan tepat! Sedia untuk Pusingan 2: Rukun vs Sunat Wuduk?'
+                    : 'Hebat! Anda berjaya membezakan kesemua 6 Rukun Wuduk dan 7 Sunat Wuduk! Mari mara ke Pusingan 3: Susunan Tertib!';
+                nextBtn.classList.remove('hidden');
+                nextBtn.textContent = currentRound === 1 ? 'Mara ke Pusingan 2 ➡️' : 'Mara ke Pusingan 3 (Tertib) ➡️';
+            } else {
+                emoji.textContent = '💔⚔️';
+                title.textContent = 'Nyawa Tamat! Cuba Lagi';
+                desc.textContent = 'Jangan berputus asa, Pahlawan Kor Pembasmi Iblis! Pastikan anda membaca kategori bakul kiri dan kanan sebelum meleret kad.';
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        // =========================================================================
+        // 5. KAWALAN TETIKUS & SENTUHAN (SWIPE & CLICK-TO-BASKET)
+        // =========================================================================
+        function getPointerPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function handlePointerDown(e) {
+            if (!isSlicingActive) return;
+            const pos = getPointerPos(e);
+            isPointerDown = true;
+            pointerStart = pos;
+            pointerCurrent = pos;
+            bladePoints = [{ x: pos.x, y: pos.y, alpha: 1 }];
+
+            const wrapper = document.getElementById('canvas-wrapper');
+            const W = wrapper.clientWidth;
+            const H = wrapper.clientHeight;
+
+            // Jika pemain sudah memilih kad dengan klik, dan sekarang klik pada bakul kiri/kanan:
+            if (selectedCardForTap && pos.y >= H - 95) {
+                const idx = flyingCards.findIndex(c => c.data.id === selectedCardForTap.data.id);
+                if (idx !== -1) {
+                    const chosenSide = pos.x < W / 2 ? 'left' : 'right';
+                    processCardCategorization(idx, chosenSide);
+                    isPointerDown = false;
+                    return;
+                }
+            }
+
+            // Semak jika pemain mengetik/klik tepat pada kad
+            for (let i = flyingCards.length - 1; i >= 0; i--) {
+                const c = flyingCards[i];
+                if (pos.x >= c.x && pos.x <= c.x + c.w && pos.y >= c.y && pos.y <= c.y + c.h) {
+                    selectedCardForTap = c;
+                    playBladeAudio('slash');
+                    break;
+                }
+            }
+        }
+
+        function handlePointerMove(e) {
+            if (!isSlicingActive || !isPointerDown) return;
+            const pos = getPointerPos(e);
+            const prev = pointerCurrent || pos;
+            pointerCurrent = pos;
+            bladePoints.push({ x: pos.x, y: pos.y, alpha: 1 });
+
+            const wrapper = document.getElementById('canvas-wrapper');
+            const W = wrapper.clientWidth;
+
+            // Semak jika garis leretan memotong mana-mana kad melayang
+            for (let i = flyingCards.length - 1; i >= 0; i--) {
+                const c = flyingCards[i];
+                if (lineIntersectsRect(prev.x, prev.y, pos.x, pos.y, c.x, c.y, c.w, c.h)) {
+                    // Tentukan arah bakul berdasarkan arah leretan (dx) atau posisi akhir leretan
+                    const dx = pos.x - pointerStart.x;
+                    let chosenSide = 'left';
+                    if (Math.abs(dx) > 18) {
+                        chosenSide = dx < 0 ? 'left' : 'right';
+                    } else {
+                        chosenSide = pos.x < W / 2 ? 'left' : 'right';
+                    }
+                    playBladeAudio('slash');
+                    processCardCategorization(i, chosenSide);
+                    break;
+                }
+            }
+        }
+
+        function handlePointerUp() {
+            isPointerDown = false;
+            pointerStart = null;
+            pointerCurrent = null;
+        }
+
+        canvas.addEventListener('mousedown', handlePointerDown);
+        canvas.addEventListener('mousemove', handlePointerMove);
+        window.addEventListener('mouseup', handlePointerUp);
+
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handlePointerDown(e); }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handlePointerMove(e); }, { passive: false });
+        window.addEventListener('touchend', handlePointerUp);
+
+        // =========================================================================
+        // 6. GELUNG ANIMASI KANVAS (RENDER LOOP)
+        // =========================================================================
+        function drawRoundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        function animateCanvas() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (wrapper && !document.getElementById('slicing-section').classList.contains('hidden')) {
+                const W = wrapper.clientWidth;
+                const H = wrapper.clientHeight;
+                const cfg = roundConfigs[currentRound] || roundConfigs[1];
+
+                ctx.clearRect(0, 0, W, H);
+
+                // 1. Latar Belakang Grid & Garis Pemisah Tengah
+                ctx.save();
+                ctx.strokeStyle = 'rgba(0, 229, 255, 0.14)';
+                ctx.setLineDash([8, 8]);
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(W / 2, 20);
+                ctx.lineTo(W / 2, H - 100);
+                ctx.stroke();
+                ctx.restore();
+
+                // 2. Lukis Dua Bakul Kategori di Bahagian Bawah (Kiri & Kanan)
+                const basketH = 84;
+                const basketY = H - basketH - 8;
+                const gap = 12;
+                const basketW = (W - gap * 3) / 2;
+
+                // Bakul Kiri
+                ctx.save();
+                drawRoundRect(ctx, gap, basketY, basketW, basketH, 18);
+                ctx.fillStyle = selectedCardForTap ? 'rgba(16, 185, 129, 0.28)' : 'rgba(15, 23, 42, 0.92)';
+                ctx.fill();
+                ctx.lineWidth = selectedCardForTap ? 3 : 2;
+                ctx.strokeStyle = cfg.leftColor;
+                ctx.stroke();
+
+                ctx.fillStyle = cfg.leftColor;
+                ctx.font = '800 13px "Plus Jakarta Sans", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`⬅️ ${cfg.leftTitle}`, gap + basketW / 2, basketY + 34);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '700 13px "Noto Sans Arabic", sans-serif';
+                ctx.fillText(cfg.leftSub, gap + basketW / 2, basketY + 60);
+                ctx.restore();
+
+                // Bakul Kanan
+                const rightBasketX = gap * 2 + basketW;
+                ctx.save();
+                drawRoundRect(ctx, rightBasketX, basketY, basketW, basketH, 18);
+                ctx.fillStyle = selectedCardForTap ? 'rgba(244, 63, 94, 0.28)' : 'rgba(15, 23, 42, 0.92)';
+                ctx.fill();
+                ctx.lineWidth = selectedCardForTap ? 3 : 2;
+                ctx.strokeStyle = cfg.rightColor;
+                ctx.stroke();
+
+                ctx.fillStyle = cfg.rightColor;
+                ctx.font = '800 13px "Plus Jakarta Sans", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${cfg.rightTitle} ➡️`, rightBasketX + basketW / 2, basketY + 34);
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '700 13px "Noto Sans Arabic", sans-serif';
+                ctx.fillText(cfg.rightSub, rightBasketX + basketW / 2, basketY + 60);
+                ctx.restore();
+
+                // 3. Kemaskini & Lancar Kad Melayang
+                if (isSlicingActive) {
+                    if (flyingCards.length === 0 && roundQueue.length > 0) {
+                        spawnTimer--;
+                        if (spawnTimer <= 0) {
+                            spawnFlyingCard();
+                            spawnTimer = 35;
+                        }
+                    } else if (flyingCards.length === 1 && roundQueue.length > 0 && flyingCards[0].vy > 0) {
+                        // Lancar kad seterusnya apabila kad semasa mula turun
+                        spawnFlyingCard();
+                    }
+                }
+
+                // 4. Lukis & Gerakkan Kad Situasi
+                for (let i = flyingCards.length - 1; i >= 0; i--) {
+                    const c = flyingCards[i];
+                    const isSelected = selectedCardForTap && selectedCardForTap.data.id === c.data.id;
+
+                    // Jika dipilih dengan klik, perlahan pergerakan (Concentrated Breathing)
+                    const timeScale = isSelected ? 0.15 : 1;
+                    c.x += c.vx * timeScale;
+                    c.y += c.vy * timeScale;
+                    c.vy += c.gravity * timeScale;
+                    c.angle += c.vAngle * timeScale;
+
+                    // Pastikan kad tidak terkeluar dari sisi kiri/kanan skrin
+                    if (c.x < 10) { c.x = 10; c.vx = Math.abs(c.vx); }
+                    if (c.x + c.w > W - 10) { c.x = W - 10 - c.w; c.vx = -Math.abs(c.vx); }
+
+                    // Jika kad jatuh melepasi bahagian bawah tanpa ditebas, masukkan semula ke giliran dengan lembut
+                    if (c.y > H + 20) {
+                        flyingCards.splice(i, 1);
+                        if (isSelected) selectedCardForTap = null;
+                        roundQueue.push(c.data);
+                        continue;
+                    }
+
+                    // Lukis Kad
+                    ctx.save();
+                    ctx.translate(c.x + c.w / 2, c.y + c.h / 2);
+                    ctx.rotate(c.angle);
+
+                    drawRoundRect(ctx, -c.w / 2, -c.h / 2, c.w, c.h, 16);
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fill();
+
+                    // Warna sempadan berdasarkan suis Petunjuk Warna
+                    if (isSelected) {
+                        ctx.lineWidth = 3.5;
+                        ctx.strokeStyle = '#facc15';
+                    } else if (colorHintEnabled) {
+                        ctx.lineWidth = 2.5;
+                        ctx.strokeStyle = c.data.cat === 'left' ? cfg.leftColor : cfg.rightColor;
+                    } else {
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = '#38bdf8';
+                    }
+                    ctx.stroke();
+
+                    // Ikon & Teks Jawi / Rumi
+                    ctx.textAlign = 'center';
+                    ctx.font = '20px sans-serif';
+                    ctx.fillText(c.data.icon, 0, -c.h / 2 + 24);
+
+                    if (scriptMode === 'jawi') {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = '700 16px "Noto Sans Arabic", sans-serif';
+                        ctx.fillText(c.data.jawi, 0, 14);
+                    } else if (scriptMode === 'rumi') {
+                        ctx.fillStyle = '#e0f2fe';
+                        ctx.font = '700 12px "Plus Jakarta Sans", sans-serif';
+                        ctx.fillText(c.data.rumi, 0, 14, c.w - 18);
+                    } else {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = '700 14px "Noto Sans Arabic", sans-serif';
+                        ctx.fillText(c.data.jawi, 0, 8, c.w - 16);
+                        ctx.fillStyle = '#7dd3fc';
+                        ctx.font = '600 11px "Plus Jakarta Sans", sans-serif';
+                        ctx.fillText(c.data.rumi, 0, 28, c.w - 16);
+                    }
+
+                    ctx.restore();
+                }
+
+                // 5. Lukis Belahan Kad yang Ditebas
+                for (let i = slicedHalves.length - 1; i >= 0; i--) {
+                    const h = slicedHalves[i];
+                    h.x += h.vx;
+                    h.y += h.vy;
+                    h.vy += 0.25;
+                    h.rot += h.vRot;
+                    h.alpha -= 0.03;
+                    if (h.alpha <= 0) {
+                        slicedHalves.splice(i, 1);
+                        continue;
+                    }
+                    ctx.save();
+                    ctx.globalAlpha = h.alpha;
+                    ctx.translate(h.x + h.w / 2, h.y + h.h / 2);
+                    ctx.rotate(h.rot);
+                    drawRoundRect(ctx, -h.w / 2, -h.h / 2, h.w, h.h, 12);
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fill();
+                    ctx.strokeStyle = h.color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.font = '18px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(h.text, 0, 6);
+                    ctx.restore();
+                }
+
+                // 6. Lukis Percikan Air
+                for (let i = waterParticles.length - 1; i >= 0; i--) {
+                    const p = waterParticles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.15;
+                    p.alpha -= 0.03;
+                    if (p.alpha <= 0) {
+                        waterParticles.splice(i, 1);
+                        continue;
+                    }
+                    ctx.save();
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // 7. Lukis Teks Maklum Balas Terapung
+                for (let i = floatingPopups.length - 1; i >= 0; i--) {
+                    const fp = floatingPopups[i];
+                    fp.y -= 1.2;
+                    fp.alpha -= 0.02;
+                    if (fp.alpha <= 0) {
+                        floatingPopups.splice(i, 1);
+                        continue;
+                    }
+                    ctx.save();
+                    ctx.globalAlpha = fp.alpha;
+                    ctx.font = '800 15px "Plus Jakarta Sans", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = fp.color;
+                    ctx.fillText(fp.text, fp.x, fp.y);
+                    ctx.restore();
+                }
+
+                // 8. Lukis Jejak Pedang Pernafasan Air (Nichirin Blade Trail)
+                if (bladePoints.length > 1) {
+                    ctx.save();
+                    for (let i = 1; i < bladePoints.length; i++) {
+                        const p1 = bladePoints[i - 1];
+                        const p2 = bladePoints[i];
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(0, 229, 255, ${p2.alpha})`;
+                        ctx.lineWidth = i * 1.4;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                }
+
+                // Pudarkan jejak pedang secara beransur-ansur
+                for (let i = bladePoints.length - 1; i >= 0; i--) {
+                    bladePoints[i].alpha -= 0.09;
+                    if (bladePoints[i].alpha <= 0) bladePoints.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateCanvas);
+        }
+
+        // =========================================================================
+        // 7. PUSINGAN 3: SUSUNAN TERTIB 6 RUKUN WUDUK
+        // =========================================================================
+        let tertibPlacedOrders = [];
+        let tertibDeckItems = [];
+
+        function initTertibRound() {
+            lives = 3;
+            sortedCount = 0;
+            totalInRound = 6;
+            updateTopHUD();
+
+            tertibPlacedOrders = [];
+            tertibDeckItems = [...rukunTertibItems].sort(() => Math.random() - 0.5);
+
+            document.getElementById('tertib-victory-box').classList.add('hidden');
+            document.getElementById('next-tertib-hint').textContent = 'Langkah #1';
+
+            renderTertibSlots();
+            renderTertibDeck();
+        }
+
+        function renderTertibSlots() {
+            const container = document.getElementById('tertib-target-slots');
+            let html = '';
+
+            for (let step = 1; step <= 6; step++) {
+                const placedItem = rukunTertibItems.find(r => r.order === step && tertibPlacedOrders.includes(step));
+                if (placedItem) {
+                    html += `
+                        <div class="bg-gradient-to-br from-emerald-950/90 to-slate-900 border-2 border-emerald-400 rounded-2xl p-3.5 flex items-center gap-3 shadow-md">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-400 text-slate-950 font-black text-sm flex items-center justify-center shrink-0">
+                                ${step}
+                            </span>
+                            <div class="min-w-0 flex-1">
+                                <p class="jawi-text jawi-only text-base font-extrabold text-white truncate">${placedItem.jawi}</p>
+                                <p class="rumi-only text-xs font-bold text-emerald-200 truncate">${placedItem.rumi}</p>
+                            </div>
+                            <span class="text-lg">✅</span>
+                        </div>
+                    `;
+                } else {
+                    const isCurrentTarget = step === tertibPlacedOrders.length + 1;
+                    html += `
+                        <div class="bg-slate-950/80 border-2 border-dashed ${isCurrentTarget ? 'border-cyan-400 bg-cyan-950/20' : 'border-slate-800'} rounded-2xl p-3.5 flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-xl ${isCurrentTarget ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-400' : 'bg-slate-900 text-slate-500'} font-black text-sm flex items-center justify-center shrink-0">
+                                ${step}
+                            </span>
+                            <span class="text-xs font-bold ${isCurrentTarget ? 'text-cyan-300' : 'text-slate-600'}">
+                                ${isCurrentTarget ? '⬅️ Tebas Rukun Ke-' + step + ' sekarang...' : 'Slot Rukun #' + step}
+                            </span>
+                        </div>
+                    `;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        function renderTertibDeck() {
+            const deckEl = document.getElementById('tertib-shuffled-deck');
+            deckEl.innerHTML = tertibDeckItems.map(item => {
+                const isUsed = tertibPlacedOrders.includes(item.order);
+                if (isUsed) {
+                    return `
+                        <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-3.5 opacity-40 flex items-center gap-3">
+                            <span class="text-xl">${item.icon}</span>
+                            <span class="text-xs font-bold text-slate-400 line-through">${item.rumi}</span>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <button onclick="sliceTertibCard(${item.order})"
+                        class="game-btn cursor-pointer bg-slate-900 hover:bg-cyan-950/50 border-2 ${colorHintEnabled ? 'border-cyan-500/50' : 'border-slate-700'} hover:border-cyan-400 rounded-2xl p-3.5 text-left flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center text-2xl shrink-0">
+                            ${item.icon}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            ${colorHintEnabled ? `<span class="text-[10px] font-extrabold text-amber-300 uppercase">Watak: ${item.character}</span>` : ''}
+                            <p class="jawi-text jawi-only text-base sm:text-lg font-extrabold text-white leading-snug">${item.jawi}</p>
+                            <p class="rumi-only text-xs sm:text-sm font-bold text-cyan-100 mt-0.5">${item.rumi}</p>
+                        </div>
+                        <span class="text-cyan-400 text-sm font-black shrink-0">⚔️</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function sliceTertibCard(orderNum) {
+            const expectedOrder = tertibPlacedOrders.length + 1;
+
+            if (orderNum === expectedOrder) {
+                playBladeAudio('correct');
+                tertibPlacedOrders.push(orderNum);
+                sortedCount = tertibPlacedOrders.length;
+                updateTopHUD();
+
+                const item = rukunTertibItems.find(r => r.order === orderNum);
+                showToast(`⚔️ Tepat! Rukun #${orderNum}: ${item.rumi}`, 'success');
+
+                renderTertibSlots();
+                renderTertibDeck();
+
+                if (tertibPlacedOrders.length === 6) {
+                    playBladeAudio('victory');
+                    document.getElementById('next-tertib-hint').textContent = 'Selesai!';
+                    document.getElementById('tertib-victory-box').classList.remove('hidden');
+                    document.getElementById('tertib-victory-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    document.getElementById('next-tertib-hint').textContent = `Langkah #${tertibPlacedOrders.length + 1}`;
+                }
+            } else {
+                lives = Math.max(0, lives - 1);
+                updateTopHUD();
+                playBladeAudio('wrong');
+
+                if (lives <= 0) {
+                    showToast('💔 Nyawa tamat! Susunan Tertib dimulakan semula.', 'error');
+                    setTimeout(() => initTertibRound(), 900);
+                } else {
+                    showToast(`❌ Belum tepat! Cari Rukun Wuduk yang ke-${expectedOrder} dahulu.`, 'error');
+                }
+            }
+        }
+
+        // =========================================================================
+        // 8. INISIALISASI HALAMAN APABILA DIMUATKAN
+        // =========================================================================
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = function () {
+            selectRound(1);
+            animateCanvas();
+        };
+    </script>
+</body>
+</html>
